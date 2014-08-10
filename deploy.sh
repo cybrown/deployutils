@@ -3,30 +3,24 @@
 APP_NAME=$1
 GIT_PATH=/git/$APP_NAME
 APP_PATH=/apps/$APP_NAME
+BRANCH=master
 
 echo "Deploying $APP_NAME"
 
-# Saving node_modules
-if [ -d $APP_PATH/node_modules ]
-then
-    mv $APP_PATH/node_modules /tmp/node_modules_$APP_NAME
-fi
-
-# Deleting old application
-rm -rf $APP_PATH/*
-
-# Deploying master branch to app directory
 cd $GIT_PATH
-git archive master | tar -x -f - -C $APP_PATH/
 
-# Restoring node_modules
-if [ -d /tmp/node_modules_$APP_NAME ]
-then
-    mv /tmp/node_modules_$APP_NAME $APP_PATH/node_modules
-fi
+# Deleting old application, except gitgnore files
+git ls-files | while read file
+do
+    rm "$file"
+done
+
+# Deploying branch to app directory
+git archive $BRANCH | tar -x -f - -C $APP_PATH/
 
 # Install packages
 cd $APP_PATH/
 npm install
+bower install
 
 echo "Deployed"
