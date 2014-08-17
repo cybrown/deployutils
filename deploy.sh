@@ -20,7 +20,6 @@ git archive $BRANCH | tar -x -f - -C $APP_PATH/
 
 # Install packages
 cd $APP_PATH/
-npm install
-bower install
+npm install --production
 
 echo "Deployed"
